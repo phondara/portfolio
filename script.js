@@ -53,8 +53,8 @@ filters.forEach((button) => {
     button.classList.add("active");
     const filter = button.dataset.filter;
     projects.forEach((project) => {
-      const matches =
-        filter === "all" || project.dataset.category.includes(filter);
+      const categories = project.dataset.category.split(" ");
+      const matches = filter === "all" || categories.includes(filter);
       project.classList.toggle("hidden", !matches);
     });
   });
