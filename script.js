@@ -3,6 +3,8 @@ const navLinks = document.getElementById("navLinks");
 const menuToggle = document.getElementById("menuToggle");
 const sections = [...document.querySelectorAll("section[id]")];
 const navItems = [...document.querySelectorAll(".nav-links a")];
+const form = document.getElementById("contactForm");
+const formNote = document.getElementById("formNote");
 
 window.addEventListener("scroll", () => {
   header.classList.toggle("scrolled", window.scrollY > 20);
@@ -58,21 +60,35 @@ filters.forEach((button) => {
   });
 });
 
-const form = document.getElementById("contactForm");
-const formNote = document.getElementById("formNote");
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const data = new FormData(form);
-  const name = data.get("name");
-  formNote.textContent = `Thanks, ${name}! This demo form is ready to connect to your email service.`;
-  form.reset();
-});
 
-document.getElementById("year").textContent = new Date().getFullYear();
+  const button = form.querySelector("button");
+  const originalText = button.innerHTML;
 
-const glow = document.querySelector(".cursor-glow");
-window.addEventListener("pointermove", (e) => {
-  glow.style.left = `${e.clientX}px`;
-  glow.style.top = `${e.clientY}px`;
+  button.disabled = true;
+  button.innerHTML = "Sending...";
+
+  try {
+    const response = await fetch(form.action, {
+      method: "POST",
+      body: new FormData(form),
+      headers: {
+        Accept: "application/json"
+      }
+    });
+
+    if (response.ok) {
+      form.reset();
+      formNote.textContent = "Message sent successfully! I'll get back to you soon.";
+    } else {
+      formNote.textContent = "Something went wrong. Please try again.";
+    }
+  } catch (error) {
+    formNote.textContent = "Unable to send the message. Please try again.";
+  }
+
+  button.disabled = false;
+  button.innerHTML = originalText;
 });
